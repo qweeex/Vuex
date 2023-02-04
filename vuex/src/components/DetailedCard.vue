@@ -1,5 +1,5 @@
 <template>
-    <v-content>
+    <v-container>
       <v-card
           class="mx-auto"
           max-width="604"
@@ -45,7 +45,7 @@
           </v-list>
         </v-container>
       </v-card>
-    </v-content>
+    </v-container>
 </template>
 
 <script>
