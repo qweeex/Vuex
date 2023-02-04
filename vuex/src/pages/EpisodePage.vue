@@ -1,8 +1,54 @@
 <template>
     <v-container
         v-if="single_episode">
-            <DetailedCard
-            v-bind:episodeId="setId"/>
+            <div>
+              <v-container>
+                <v-card
+                    class="mx-auto"
+                    max-width="604"
+                    height="500"
+                    outlined
+                >
+                  <v-card-title class="text-h5 mb-1">
+                    {{single_episode.name}}
+                  </v-card-title>
+                  <v-card-subtitle>
+                    {{ single_episode.episode }}
+                  </v-card-subtitle>
+                  <v-container class="d-flex justify-space-between mt-10">
+                    <v-card-text>{{single_episode.air_date}}</v-card-text>
+                    <v-container class="d-flex justify-end ml-20"
+                                 max-width="200"
+                    >
+                      <v-card-text>Number of characters: {{characters_count}}</v-card-text>
+                      <v-btn
+                          @click='toggle = !toggle'
+                          class="mx-2"
+                          fab
+                          icon
+                          dark
+                      >
+                        <v-icon>
+                          mdi-plus
+                        </v-icon>
+                      </v-btn>
+                    </v-container>
+                    <v-list class="pop-up-window overflow-auto "
+                            v-show='toggle'
+                    >
+                      <v-list-item
+                          v-for="character in single_episode.characters"
+                          :key='character'
+                      >
+                        <v-list-item-title>{{ character }}</v-list-item-title>
+
+                      </v-list-item>
+
+                    </v-list>
+                  </v-container>
+                </v-card>
+              </v-container>
+            </div>
 
             <v-container class="mt-20">
                 <v-sheet
@@ -14,7 +60,6 @@
                             v-for="card in random_arr_episodes"
                             v-bind:key="card.id"
                             v-bind:card="card"
-                            @click="forceUpdate"
                         />
                     </v-slide-group>
                 </v-sheet>
@@ -28,54 +73,48 @@
 </template>
 
 <script>
-import DetailedCard from '@/components/DetailedCard.vue'
 import LiteCard from '@/components/LiteCard.vue'
     export default {
         components: {
-            DetailedCard,
             LiteCard
         },
-
-        data(){
+      watch: {
+          "$route": "getEpisode"
+      },
+      data(){
             return{
+              toggle: false,
               single_episode: [],
               characters_count: null,
               random_numbers: [],
-              random_arr_episodes: [],
-              setId: ''
+              random_arr_episodes: []
             }
         },
-
-        created() {
-            this.setId = this.$route.params.id
-        },
         methods: {
-
-            // async getEpisode() {
-            //     await this.$store.dispatch('SET_SINGLE_EPISODE', this.setId)
-            //     this.single_episode = this.$store.getters.SINGLE_EPISODE;
-            //     this.characters_count = parseInt(this.single_episode.characters.length);
-            // },
             async randomEpisodes() {
-                while (this.random_numbers.length < 6) {
-                    let random = Math.floor(Math.random() * 51) + 1
+                let episodes = this.$store.state.episodes;
+                if (episodes !== undefined){
+                  while (this.random_numbers.length < 6) {
+                    let random = Math.floor(Math.random() * episodes.length) + 1;
                     if (!this.random_numbers.includes(random)) {
-                        await this.$store.dispatch('SET_ARR_EPISODES', random)
-                        this.random_numbers.push(random)
-                        //this.random_arr_episodes = this.$store.getters.ARR_EPISODES;
-                        this.random_arr_episodes.push(this.$store.getters.ARR_EPISODES)
-                    } else {
-                        continue;
+                      this.random_numbers.push(random)
+                      this.random_arr_episodes.push(episodes[random])
                     }
+                  }
                 }
-
             },
-          forceUpdate(){
-            location.reload()
+          getEpisode() {
+            let episode = this.$store.state.episodes.find((item) => item.id === parseInt(this.$route.params.id));
+            if (episode !== undefined){
+              this.single_episode = episode;
+              this.randomEpisodes();
+            } else {
+              this.single_episode = undefined;
+            }
           },
         },
         mounted() {
-            this.randomEpisodes()
+          this.getEpisode();
         }
     }
 

@@ -29,7 +29,7 @@ export default createStore({
 
     mutations: { 
         SET_EPISODES: (state, payload) => {
-            Array.prototype.push.apply(state.episodes, payload)
+            state.episodes.push(...payload);
         },
         SET_SINGLE_EPISODE: (state, payload) => {
             state.single_episode = payload;
@@ -42,7 +42,19 @@ export default createStore({
         }
     },
 
-    actions: { 
+    actions: {
+        async doUpdateEpisodes(context){
+            await axios.get('https://rickandmortyapi.com/api/episode')
+                .then(async (main) => {
+                    context.commit('SET_EPISODES', main.data.results)
+                    for (let i = 2; i <= main.data.info.pages; i++) {
+                        await axios.get('https://rickandmortyapi.com/api/episode?page=' + i)
+                            .then((res) => {
+                                context.commit('SET_EPISODES', res.data.results)
+                            })
+                    }
+                })
+        },
         SET_EPISODES: async (context, page) => {
             try {
                 let {data} = await axios.get('https://rickandmortyapi.com/api/episode?page=' + page)
