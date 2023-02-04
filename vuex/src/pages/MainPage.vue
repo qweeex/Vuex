@@ -1,5 +1,4 @@
 <template>
-    <h2 class="mx-auto">Main page</h2>
     <v-container class="d-flex flex-wrap">    
         <LiteCard  
             v-for="card in episodes"

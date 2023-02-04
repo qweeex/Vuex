@@ -1,5 +1,4 @@
 <template>
-    <h2 class="mx-auto">Episode Page</h2>
     <v-container 
         v-if="single_episode">
             <DetailedCard 
