@@ -1,23 +1,19 @@
 <template>
   <v-app>
+    <h1 class="mx-auto">Rick & Morty API</h1>
     <v-main>
-      <HelloWorld/>
+      
+      <router-view/>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
   name: 'App',
-
-  components: {
-    HelloWorld,
-  },
-
   data: () => ({
-    //
-  }),
-}
+
+  })
+
+};
 </script>
