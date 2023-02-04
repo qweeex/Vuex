@@ -1,11 +1,10 @@
 <template>
-    <v-container 
+    <v-container
         v-if="single_episode">
-            <DetailedCard 
-            v-bind:single_episode="single_episode"
-            v-bind:characters_count="characters_count" />
-            
-            <v-container class="mt-20"> 
+            <DetailedCard
+            v-bind:episodeId="setId"/>
+
+            <v-container class="mt-20">
                 <v-sheet
                     class="mx-auto"
                     max-width="2200"
@@ -14,11 +13,12 @@
                         <LiteCard
                             v-for="card in random_arr_episodes"
                             v-bind:key="card.id"
-                            v-bind:card="card"   
+                            v-bind:card="card"
+                            @click="forceUpdate"
                         />
                     </v-slide-group>
                 </v-sheet>
-            </v-container>     
+            </v-container>
     </v-container>
     <v-container
         v-else>
@@ -36,23 +36,26 @@ import LiteCard from '@/components/LiteCard.vue'
             LiteCard
         },
 
-        data: () => ({
-            single_episode: [],
-            characters_count: Number,
-            random_numbers: [],
-            random_arr_episodes: []
-        }),
+        data(){
+            return{
+              single_episode: [],
+              characters_count: null,
+              random_numbers: [],
+              random_arr_episodes: [],
+              setId: ''
+            }
+        },
 
         created() {
             this.setId = this.$route.params.id
         },
         methods: {
-            
-            async getEpisode() {
-                await this.$store.dispatch('SET_SINGLE_EPISODE', this.setId)
-                this.single_episode = this.$store.getters.SINGLE_EPISODE;
-                this.characters_count = this.single_episode.characters.length;
-            },
+
+            // async getEpisode() {
+            //     await this.$store.dispatch('SET_SINGLE_EPISODE', this.setId)
+            //     this.single_episode = this.$store.getters.SINGLE_EPISODE;
+            //     this.characters_count = parseInt(this.single_episode.characters.length);
+            // },
             async randomEpisodes() {
                 while (this.random_numbers.length < 6) {
                     let random = Math.floor(Math.random() * 51) + 1
@@ -66,14 +69,16 @@ import LiteCard from '@/components/LiteCard.vue'
                     }
                 }
 
-            }
+            },
+          forceUpdate(){
+            location.reload()
+          },
         },
         mounted() {
-            this.getEpisode(),
             this.randomEpisodes()
         }
     }
-    
+
 
 </script>
 
